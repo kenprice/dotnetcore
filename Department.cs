@@ -4,7 +4,7 @@ namespace aspnetcoreapp
 {
     public class Department
     {
-        private int id;
+        public int id {get; set;}
         public string name {get; set;}
         private List<Employee> employees = new List<Employee>();
 
@@ -22,6 +22,11 @@ namespace aspnetcoreapp
             if (this.employees.Exists(e => e.id == employee.id)) {
                 this.employees.Remove(employee);
             }
+        }
+
+        public Department(int id, string name) {
+            this.id = id;
+            this.name = name;
         }
     }
 }
