@@ -11,5 +11,9 @@ namespace aspnetcoreapp
             this.lastname = lastname;
             this.firstname = firstname;
         }
+
+        public Employee() {
+            //Parameterless constructor required for XmlSerializer
+        }
     }
 }
