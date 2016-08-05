@@ -12,27 +12,27 @@ namespace aspnetcoreapp
         public static string getSerializedEmployee(int id) {
             XmlSerializer serializer = new XmlSerializer(typeof(Employee));
 
-            using(StringWriter writer = new StringWriter()) {
-                Employee employee;
-                if (testEmployees.TryGetValue(id, out employee)) {
+            Employee employee;
+            if (testEmployees.TryGetValue(id, out employee)) {
+                using(StringWriter writer = new StringWriter()) {
                     serializer.Serialize(writer, testEmployees[id]);
                     return writer.ToString();
-                } else {
-                    return null;
                 }
+            } else {
+                return null;
             }
         }
         public static string getSerializedDepartment(int id) {
             XmlSerializer serializer = new XmlSerializer(typeof(Department));
 
-            using(StringWriter writer = new StringWriter()) {
-                Department dept;
-                if (testDepartments.TryGetValue(id, out dept)) {
+            Department dept;
+            if (testDepartments.TryGetValue(id, out dept)) {
+                using(StringWriter writer = new StringWriter()) {
                     serializer.Serialize(writer, testDepartments[id]);
                     return writer.ToString();
-                } else {
-                    return null;
                 }
+            } else {
+                return null;
             }
         }
         private static void populateTestData() {
