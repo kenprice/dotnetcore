@@ -1,8 +1,6 @@
-using System;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Primitives;
 
 namespace aspnetcoreapp
 {
@@ -14,7 +12,6 @@ namespace aspnetcoreapp
             string output = null;
             app.Run(context =>
             {
-                Console.Out.WriteLine(context.Request.Path);
                 if (!context.Request.Path.HasValue) {
                     return context.Response.WriteAsync("Hello there! You can request an employee by navigating to /employees?id=1 or a department with /departments?id=1");
                 }
