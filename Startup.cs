@@ -10,10 +10,11 @@ namespace aspnetcoreapp
         {
             int idParam;
             string output = null;
+            const string greeting = "Hello there! You can request an employee by navigating to /employees?id=1 or a department with /departments?id=1";
             app.Run(context =>
             {
                 if (!context.Request.Path.HasValue) {
-                    return context.Response.WriteAsync("Hello there! You can request an employee by navigating to /employees?id=1 or a department with /departments?id=1");
+                    return context.Response.WriteAsync(greeting);
                 }
                 switch (context.Request.Path) {
                     case "/employees":
@@ -37,7 +38,7 @@ namespace aspnetcoreapp
                             return context.Response.WriteAsync(output);
                         }
                 }
-                return context.Response.WriteAsync("Hello from ASP.NET Core!");
+                return context.Response.WriteAsync(greeting);
             });
         }
     }
