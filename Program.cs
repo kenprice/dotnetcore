@@ -2,43 +2,47 @@ using Microsoft.AspNetCore.Hosting;
 using System.Collections.Generic;
 using System.Xml.Serialization;
 using System.IO;
+using System;
 
 namespace aspnetcoreapp
 {
     public class Program
     {
-        public static Dictionary<int, Employee> testEmployees {get;  set;}
-        public static Dictionary<int, Department> testDepartments {get; set;}
+        private static Dictionary<int, Employee> employeesDict = new Dictionary<int, Employee>();
+        private static Dictionary<int, Department> departmentsDict = new Dictionary<int, Department>();
+        private static List<Employee> employees = new List<Employee>();
+        private static List<Department> departments = new List<Department>();
+
         public static string getSerializedEmployee(int id) {
             XmlSerializer serializer = new XmlSerializer(typeof(Employee));
 
             Employee employee;
-            if (testEmployees.TryGetValue(id, out employee)) {
+            if (employeesDict.TryGetValue(id, out employee)) {
                 using(StringWriter writer = new StringWriter()) {
-                    serializer.Serialize(writer, testEmployees[id]);
+                    serializer.Serialize(writer, employeesDict[id]);
                     return writer.ToString();
                 }
             } else {
                 return null;
             }
         }
+
         public static string getSerializedDepartment(int id) {
             XmlSerializer serializer = new XmlSerializer(typeof(Department));
 
             Department dept;
-            if (testDepartments.TryGetValue(id, out dept)) {
+            if (departmentsDict.TryGetValue(id, out dept)) {
                 using(StringWriter writer = new StringWriter()) {
-                    serializer.Serialize(writer, testDepartments[id]);
+                    serializer.Serialize(writer, departmentsDict[id]);
                     return writer.ToString();
                 }
             } else {
                 return null;
             }
         }
+
         private static void populateTestData() {
             // Please excuse the test data.
-            var employees = new List<Employee>();
-            var departments = new List<Department>();
             employees.Add(new Employee(1, "Price", "Ken"));
             employees.Add(new Employee(2, "Price", "Jason"));
             employees.Add(new Employee(3, "Teskey", "Samantha"));
@@ -53,18 +57,59 @@ namespace aspnetcoreapp
             departments[1].addEmployee(employees[3]);
             departments[1].addEmployee(employees[4]);
             departments[1].addEmployee(employees[5]);
-            testEmployees = new Dictionary<int, Employee>();
-            testDepartments = new Dictionary<int, Department>();
+
+            populateDict();
+        }
+
+        private static void populateDict() {
             employees.ForEach(delegate(Employee emp) {
-                testEmployees.Add(emp.id, emp);
+                employeesDict.Add(emp.id, emp);
             });
             departments.ForEach(delegate(Department dep) {
-                testDepartments.Add(dep.id, dep);
+                departmentsDict.Add(dep.id, dep);
             });
         }
+
+        private static void saveSerializedData() {
+            XmlSerializer empSerializer = new XmlSerializer(typeof(List<Employee>));
+            XmlSerializer depSerializer = new XmlSerializer(typeof(List<Department>));
+            using(StreamWriter writer = new StreamWriter(File.OpenWrite(".employees"))) {
+                empSerializer.Serialize(writer, employees);
+                System.Console.WriteLine(writer.ToString());
+            }
+            using(StreamWriter writer = new StreamWriter(File.OpenWrite(".departments"))) {
+                depSerializer.Serialize(writer, departments);
+                System.Console.WriteLine(writer.ToString());
+            }
+        }
+
+        private static void loadSerializedData() {
+            XmlSerializer empSerializer = new XmlSerializer(typeof(List<Employee>));
+            XmlSerializer depSerializer = new XmlSerializer(typeof(List<Department>));
+            using(StreamReader reader = new StreamReader(File.OpenRead(".employees"))) {
+                employees = (List<Employee>)empSerializer.Deserialize(reader);
+            }
+            using(StreamReader reader = new StreamReader(File.OpenRead(".departments"))) {
+                departments = (List<Department>)depSerializer.Deserialize(reader);
+            }
+            populateDict();
+
+            // Employee objects in each Department object should refer to the same objects
+            // as those in the employee list. So let's restore these relationships.
+            departments.ForEach(delegate(Department dep) {
+                for (int i = 0; i < dep.employees.Count; i++) {
+                    if (employeesDict.ContainsKey(dep.employees[i].id)) {
+                        dep.employees[i] = employeesDict[dep.employees[i].id];
+                    }
+                }
+            });
+        }
+
         public static void Main(string[] args)
         {
             populateTestData();
+            saveSerializedData();
+
             IWebHost host = new WebHostBuilder()
                 .UseKestrel()
                 .UseStartup<Startup>()
