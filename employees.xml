@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ArrayOfEmployee xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <Employee>
+    <id>1</id>
+    <lastname>Price</lastname>
+    <firstname>Ken</firstname>
+  </Employee>
+  <Employee>
+    <id>2</id>
+    <lastname>Price</lastname>
+    <firstname>Jason</firstname>
+  </Employee>
+  <Employee>
+    <id>3</id>
+    <lastname>Teskey</lastname>
+    <firstname>Samantha</firstname>
+  </Employee>
+  <Employee>
+    <id>4</id>
+    <lastname>Thomas</lastname>
+    <firstname>Justin</firstname>
+  </Employee>
+  <Employee>
+    <id>5</id>
+    <lastname>Average</lastname>
+    <firstname>Joe</firstname>
+  </Employee>
+  <Employee>
+    <id>6</id>
+    <lastname>Tim</lastname>
+    <firstname>Chad</firstname>
+  </Employee>
+</ArrayOfEmployee>
