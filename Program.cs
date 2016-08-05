@@ -73,23 +73,21 @@ namespace aspnetcoreapp
         private static void saveSerializedData() {
             XmlSerializer empSerializer = new XmlSerializer(typeof(List<Employee>));
             XmlSerializer depSerializer = new XmlSerializer(typeof(List<Department>));
-            using(StreamWriter writer = new StreamWriter(File.OpenWrite(".employees"))) {
+            using(Stream writer = File.Open("employees.xml", FileMode.Create)) {
                 empSerializer.Serialize(writer, employees);
-                System.Console.WriteLine(writer.ToString());
             }
-            using(StreamWriter writer = new StreamWriter(File.OpenWrite(".departments"))) {
+            using(Stream writer = File.Open("departments.xml", FileMode.Create)) {
                 depSerializer.Serialize(writer, departments);
-                System.Console.WriteLine(writer.ToString());
             }
         }
 
         private static void loadSerializedData() {
             XmlSerializer empSerializer = new XmlSerializer(typeof(List<Employee>));
             XmlSerializer depSerializer = new XmlSerializer(typeof(List<Department>));
-            using(StreamReader reader = new StreamReader(File.OpenRead(".employees"))) {
+            using(StreamReader reader = new StreamReader(File.OpenRead("employees.xml"))) {
                 employees = (List<Employee>)empSerializer.Deserialize(reader);
             }
-            using(StreamReader reader = new StreamReader(File.OpenRead(".departments"))) {
+            using(StreamReader reader = new StreamReader(File.OpenRead("departments.xml"))) {
                 departments = (List<Department>)depSerializer.Deserialize(reader);
             }
             populateDict();
@@ -107,8 +105,16 @@ namespace aspnetcoreapp
 
         public static void Main(string[] args)
         {
-            populateTestData();
-            saveSerializedData();
+            if (args.Length == 0) {
+                // Normal mode - fetch employee/department data from xml files
+                loadSerializedData();
+            } else if (args.Length == 1 && args[0] == "test") {
+                populateTestData();
+                saveSerializedData();
+            } else {
+                Console.WriteLine("Usage: fakeco-server [test]\n'test' will create new employees and departments.");
+                return;
+            }
 
             IWebHost host = new WebHostBuilder()
                 .UseKestrel()
